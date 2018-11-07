@@ -28,8 +28,6 @@ import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.modalityModifier
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
-import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.types.typeUtil.supertypes
 
 class AddPropertyToSupertypeFix private constructor(
@@ -139,15 +137,6 @@ class AddPropertyToSupertypeFix private constructor(
         private fun getSuperClasses(classDescriptor: ClassDescriptor): List<ClassDescriptor> {
             val supertypes = classDescriptor.defaultType.supertypes().toMutableList().sortSubtypesFirst()
             return supertypes.mapNotNull { it.constructor.declarationDescriptor as? ClassDescriptor }
-        }
-
-        private fun MutableList<KotlinType>.sortSubtypesFirst(): List<KotlinType> {
-            // TODO: rewrite this
-            val typeChecker = KotlinTypeChecker.DEFAULT
-            sortWith(Comparator { a, b ->
-                if (typeChecker.isSubtypeOf(a, b)) -1 else 1
-            })
-            return this
         }
 
         private fun generatePropertySignatureForType(
